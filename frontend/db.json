@@ -1,0 +1,49 @@
+{
+  "opportunities": [
+    {
+      "id": 1,
+      "title": "Ensine para uma criança",
+      "client": "Hospital do Caneiro",
+      "date": "18/02/2025 - 15:45",
+      "requirements": [
+        "Idade entre 18-60 anos",
+        "Inglês fluente",
+        "Experiência com crianças"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Alimente animais de rua",
+      "client": "ONG AUnimal",
+      "date": "12/06/2025 - 12:20",
+      "requirements": [
+        "Idade entre 18-60 anos",
+        "1 saco de ração de 1kg",
+        "Dog lover"
+      ]
+    }
+  ],
+  "volunteers": [
+    {
+      "id": 1,
+      "name": "Amélia da Conceição Vieira",
+      "skills": ["Inglês Fluente", "Pedagogia", "Metodologia XPTO"],
+      "status": "pending",
+      "address": "Av. Santa Maria, Paraíso - 225 - SP"
+    },
+    {
+      "id": 2,
+      "name": "Luiz de Azevedo",
+      "skills": ["Francês Fluente", "Serralheria", "Facilidade com crianças"],
+      "status": "pending",
+      "address": "Rua Doutor Zuquim, 1782 - Santana - SP"
+    },
+        {
+      "id": 3,
+      "name": "Cris Han",
+      "skills": ["Coreano Fluente", "Gostosa"],
+      "status": "pending",
+      "address": "Rua Jose Barbosa, 231 - Samambaia - Mairiporã"
+    }
+  ]
+}
