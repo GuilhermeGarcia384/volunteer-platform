@@ -1,9 +1,4 @@
--- Criar e usar a database
-DROP DATABASE IF EXISTS site_voluntariado;
-CREATE DATABASE site_voluntariado;
-USE site_voluntariado;
 
--- Tabela de ONGs
 DROP TABLE IF EXISTS ongs;
 CREATE TABLE ongs (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -53,19 +48,12 @@ INSERT INTO ongs (nome, endereco) VALUES ('Teste ONG', 'Rua Exemplo, 123');
 
 INSERT INTO oportunidades (titulo, descricao, latitude, longitude, ong_id, ong_nome) VALUES
 ('Mutirão na Vila Mariana', 'Ajude a pintar a sede da ONG e organizar doações.', '-23.5897', '-46.6358', 1, 'Teste ONG'),
-
 ('Feira de Adoção na Paulista', 'Auxilie com organização e cuidado de pets para adoção.', '-23.5649', '-46.6527', 1, 'Teste ONG'),
-
 ('Recreação no Parque Ibirapuera', 'Conduza atividades lúdicas com crianças em situação de risco.', '-23.5874', '-46.6576', 1, 'Teste ONG'),
-
 ('Entrega de Cestas em Itaquera', 'Ajude na separação e entrega de alimentos a famílias cadastradas.', '-23.5446', '-46.4606', 1, 'Teste ONG'),
-
 ('Oficina de Arte em Pinheiros', 'Instrua crianças em oficinas de arte e criatividade.', '-23.5615', '-46.7021', 1, 'Teste ONG'),
-
 ('Campanha de Saúde na Lapa', 'Oriente moradores sobre prevenção de doenças.', '-23.5216', '-46.6934', 1, 'Teste ONG'),
-
 ('Educação Ambiental no Brás', 'Organize palestras e dinâmicas sobre sustentabilidade.', '-23.5428', '-46.6215', 1, 'Teste ONG'),
-
 ('Atendimento no Centro de Apoio Sé', 'Acolha e oriente pessoas em situação de rua.', '-23.5503', '-46.6339', 1, 'Teste ONG');
 
 INSERT INTO voluntarios (nome, nascimento, cpf, mensagem) 
@@ -74,7 +62,7 @@ VALUES ('Petrônio Brás de Cunha', '1967-02-19', '81909010', 'Eu sou Petrônio 
 INSERT INTO inscricoes (voluntario_id, voluntario_nome, oportunidade_id) 
 VALUES (1, 'Petrônio Brás de Cunha', 1);
 
--- Ver conteúdo das tabelas
+-- (Opcional) Visualizar conteúdo
 SELECT * FROM ongs;
 SELECT * FROM oportunidades;
 SELECT * FROM voluntarios;
