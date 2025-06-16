@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
- baseURL: 'https://volunteer-backend.up.railway.app'
+ baseURL: 'https://volunteer-platform-production.up.railway.app/'
 });
 
 // Oportunidades
