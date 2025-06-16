@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.engine.url import make_url
 import pymysql
+from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
 
@@ -20,23 +19,29 @@ api.add_middleware(
     allow_headers=["*"],
 )
 
-# Conexão usando DATABASE_URL
+# Verifica variáveis obrigatórias
+def validar_variaveis_ambiente():
+    required_vars = ["DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"]
+    for var in required_vars:
+        if os.getenv(var) is None:
+            raise EnvironmentError("Faltando variáveis de ambiente para a conexão com o banco de dados.")
+
 def get_connection():
     try:
-        url = make_url(os.getenv("DATABASE_URL"))
+        validar_variaveis_ambiente()
         return pymysql.connect(
-            host=url.host,
-            port=url.port or 3306,
-            user=url.username,
-            password=url.password,
-            db=url.database,
+            host=os.getenv("DB_HOST"),
+            port=int(os.getenv("DB_PORT")),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            db=os.getenv("DB_NAME"),
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
     except Exception as e:
         raise e
 
-# MODELS
+# Models
 class DadosInscricao(BaseModel):
     nome: str
     nascimento: str
@@ -52,7 +57,7 @@ class OportunidadeONG(BaseModel):
     latitude: str
     longitude: str
 
-# ENDPOINTS
+# Endpoints
 @api.get("/oportunidades")
 async def consultar_oportunidades():
     conn = None
@@ -71,7 +76,10 @@ async def consultar_oportunidades():
 async def salvar_inscricao(dados: DadosInscricao):
     conn = None
     try:
-        cpf = dados.cpf if len(dados.cpf) <= 11 else "00000000000"
+        cpf = dados.cpf
+        if len(cpf) > 11:
+            cpf = "00000000000"  # CPF padrão
+
         conn = get_connection()
         with conn.cursor() as cursor:
             cursor.execute(
@@ -79,10 +87,12 @@ async def salvar_inscricao(dados: DadosInscricao):
                 (dados.nome, dados.nascimento, cpf, dados.mensagem)
             )
             voluntario_id = cursor.lastrowid
+            
             cursor.execute(
                 "INSERT INTO inscricoes (voluntario_id, voluntario_nome, oportunidade_id) VALUES (%s, %s, %s)",
                 (voluntario_id, dados.nome, dados.oportunidade_id)
             )
+            
             conn.commit()
             return {"success": True}
     except Exception as e:
@@ -99,16 +109,20 @@ async def criar_oportunidade(dados: OportunidadeONG):
     try:
         conn = get_connection()
         with conn.cursor() as cursor:
+            # Insert ONG
             cursor.execute(
                 "INSERT INTO ongs (nome, endereco) VALUES (%s, %s) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",
                 (dados.ong_nome, dados.endereco)
             )
+            
+            # Insert Oportunidade
             cursor.execute(
                 """INSERT INTO oportunidades 
-                (titulo, descricao, latitude, longitude, ong_id, ong_nome) 
-                VALUES (%s, %s, %s, %s, LAST_INSERT_ID(), %s)""",
-                (dados.titulo, dados.descricao, dados.latitude, dados.longitude, dados.ong_nome)
+                (titulo, descricao, ong_id, ong_nome) 
+                VALUES (%s, %s, LAST_INSERT_ID(), %s)""",
+                (dados.titulo, dados.descricao, dados.ong_nome)
             )
+            
             conn.commit()
             return {"success": True}
     except Exception as e:
@@ -146,15 +160,17 @@ async def consultar_voluntarios():
         conn = get_connection()
         with conn.cursor() as cursor:
             cursor.execute("SELECT id, nome FROM voluntarios")
-            return [
-                {
+            rows = cursor.fetchall()
+            voluntarios = []
+            for row in rows:
+                voluntarios.append({
                     "id": row["id"],
                     "name": row["nome"],
-                    "address": "Endereço não disponível"
-                }
-                for row in cursor.fetchall()
-            ]
+                    "address": "Endereço não disponível" 
+                })
+            return voluntarios
     except Exception as e:
+        print(f"Erro: {e}")
         return JSONResponse({"error": str(e)}, 500)
     finally:
         if conn:
